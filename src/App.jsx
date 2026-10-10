@@ -4,11 +4,18 @@ import { downloadCvPdf, printCv } from './utils/exportPdf';
 import './App.css';
 
 export default function App() {
-  // Persistence with localStorage
+  // Persistence with localStorage (versioned to ensure new template loads automatically)
   const [resumeData, setResumeData] = useState(() => {
     try {
-      const saved = localStorage.getItem('cv_builder_resume_data');
-      if (saved) return JSON.parse(saved);
+      const templateVersion = localStorage.getItem('cv_builder_template_version');
+      if (templateVersion === 'v2_sebastian') {
+        const saved = localStorage.getItem('cv_builder_resume_data');
+        if (saved) return JSON.parse(saved);
+      } else {
+        localStorage.setItem('cv_builder_template_version', 'v2_sebastian');
+        localStorage.setItem('cv_builder_resume_data', JSON.stringify(defaultResumeData));
+        return defaultResumeData;
+      }
     } catch (e) {
       console.warn('Could not read from localStorage:', e);
     }
@@ -16,7 +23,7 @@ export default function App() {
   });
 
   const [accentColor, setAccentColor] = useState(() => {
-    return localStorage.getItem('cv_builder_accent_color') || '#c2410c';
+    return localStorage.getItem('cv_builder_accent_color') || '#4e5159';
   });
 
   const [currentStep, setCurrentStep] = useState(0);
@@ -107,11 +114,13 @@ export default function App() {
         ...prev.jobs,
         {
           id: `job-${Date.now()}`,
-          title: 'Product Role',
-          company: 'Company Name',
-          place: 'City, Country',
-          dates: '2022 - Present',
-          points: ['Led key initiatives and delivered measurable business results.']
+          title: 'Senior Accountant',
+          company: 'Salford & Co.',
+          place: '',
+          dates: '2030 - 2033',
+          points: [
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+          ]
         }
       ]
     }));
@@ -149,10 +158,10 @@ export default function App() {
         ...prev.education,
         {
           id: `edu-${Date.now()}`,
-          degree: 'Bachelor of Science',
-          school: 'University Name',
-          year: '2020',
-          note: 'Graduated with Distinction'
+          degree: 'Senior Accountant',
+          school: 'Borcelle University',
+          year: '2025-2026',
+          note: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
         }
       ]
     }));
@@ -190,8 +199,8 @@ export default function App() {
         ...prev.skillGroups,
         {
           id: `skill-${Date.now()}`,
-          name: 'Core Competencies',
-          skills: 'Strategic Planning, Problem Solving, Communication'
+          name: 'Additional Skills',
+          skills: 'Tax Advisory, Budgeting, Risk Analysis'
         }
       ]
     }));
@@ -200,14 +209,32 @@ export default function App() {
 
   const removeSkillGroup = (index) => {
     if (resumeData.skillGroups.length <= 1) {
-      alert('Please keep at least one skill category.');
+      alert('Please keep at least one skill entry.');
       return;
     }
     setResumeData((prev) => ({
       ...prev,
       skillGroups: prev.skillGroups.filter((_, i) => i !== index)
     }));
-    showToast('Skill category removed.');
+    showToast('Skill entry removed.');
+  };
+
+  // Helper to extract all skills for the 3-column bulleted grid
+  const getAllSkills = () => {
+    if (!Array.isArray(resumeData.skillGroups)) return [];
+    const list = [];
+    resumeData.skillGroups.forEach((group) => {
+      if (group && group.skills) {
+        const parts = group.skills
+          .split(/[,\n]/)
+          .map((s) => s.trim().replace(/^[•\-*]\s*/, ''))
+          .filter(Boolean);
+        list.push(...parts);
+      }
+    });
+    return list.length > 0
+      ? list
+      : ['Auditing', 'Financial Accounting', 'Financial Reporting', 'Auditing', 'Financial Accounting'];
   };
 
   // PDF Export
@@ -233,8 +260,8 @@ export default function App() {
   // Reset & Sample data
   const loadSampleData = () => {
     setResumeData(defaultResumeData);
-    setAccentColor('#c2410c');
-    showToast('Sample resume data loaded.');
+    setAccentColor('#4e5159');
+    showToast('Loaded Sebastian Bennett template sample! 📄');
   };
 
   const clearAllData = () => {
@@ -248,6 +275,15 @@ export default function App() {
         address: '',
         photo: '',
         bio: '',
+        education: [
+          {
+            id: 'edu-1',
+            degree: '',
+            school: '',
+            year: '',
+            note: ''
+          }
+        ],
         jobs: [
           {
             id: 'job-1',
@@ -256,15 +292,6 @@ export default function App() {
             place: '',
             dates: '',
             points: ['']
-          }
-        ],
-        education: [
-          {
-            id: 'edu-1',
-            degree: '',
-            school: '',
-            year: '',
-            note: ''
           }
         ],
         skillGroups: [
@@ -280,13 +307,13 @@ export default function App() {
     }
   };
 
-  // Step information
+  // Step information: Ordered matching the document visual hierarchy
   const steps = [
-    { label: 'Your Details', head: 'Your CV heading', sub: 'How do you want employers to contact you?' },
-    { label: 'Short Bio', head: 'Your short bio', sub: 'Introduce yourself in a few sentences.' },
-    { label: 'Experience', head: 'Your work experience', sub: 'Tell us where you have worked.' },
-    { label: 'Education', head: 'Your education', sub: 'Add the schools and degrees you earned.' },
-    { label: 'Skills', head: 'Your skills', sub: 'List what you are great at.' }
+    { label: 'Your Details', head: 'Personal Details', sub: 'How do employers and clients reach you?' },
+    { label: 'About Me', head: 'About Me', sub: 'Summarize your background and professional ethos.' },
+    { label: 'Education', head: 'Your Education', sub: 'Add your universities, degrees, and academic achievements.' },
+    { label: 'Experience', head: 'Work Experience', sub: 'List your past roles, responsibilities, and achievements.' },
+    { label: 'Skills', head: 'Your Skills', sub: 'Highlight your core competencies and domain expertise.' }
   ];
 
   const isLastStep = currentStep === steps.length - 1;
@@ -301,7 +328,7 @@ export default function App() {
           <div className="brand-area">
             <div className="brand-logo-icon" aria-hidden="true">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
               </svg>
             </div>
             <span className="brand-title">CV Builder</span>
@@ -331,10 +358,10 @@ export default function App() {
               type="button"
               className="header-btn"
               onClick={loadSampleData}
-              title="Fill with designer sample data"
+              title="Load Sebastian Bennett sample data"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
               </svg>
               Sample Data
             </button>
@@ -347,8 +374,8 @@ export default function App() {
               title="Clear all fields"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="3 6 5 6 21 6"/>
-                <path d="M19 6l-2 14H7L5 6m5 0V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2"/>
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6l-2 14H7L5 6m5 0V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2" />
               </svg>
               Clear
             </button>
@@ -361,9 +388,9 @@ export default function App() {
               title="Print directly or save via browser"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="6 9 6 2 18 2 18 9"/>
-                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
-                <rect x="6" y="14" width="12" height="8"/>
+                <polyline points="6 9 6 2 18 2 18 9" />
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                <rect x="6" y="14" width="12" height="8" />
               </svg>
               Print
             </button>
@@ -384,7 +411,7 @@ export default function App() {
               ) : (
                 <>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
                   </svg>
                   Download PDF
                 </>
@@ -474,7 +501,7 @@ export default function App() {
                       className="photo-action-btn"
                       onClick={() => fileInputRef.current?.click()}
                     >
-                      {resumeData.photo ? 'Change Photo' : 'Upload Photo'}
+                      {resumeData.photo ? 'Change Photo' : 'Upload Photo (Optional)'}
                     </button>
                     {resumeData.photo && (
                       <button
@@ -489,13 +516,13 @@ export default function App() {
                 </div>
 
                 <div className="field-group">
-                  <label className="field-label" htmlFor="jobTitle">Job Title</label>
+                  <label className="field-label" htmlFor="jobTitle">Professional Title</label>
                   <input
                     id="jobTitle"
                     className="field-input"
                     type="text"
                     value={resumeData.jobTitle}
-                    placeholder="e.g. Senior Product Designer"
+                    placeholder="e.g. Professional Accountant"
                     onChange={(e) => handleFieldChange('jobTitle', e.target.value)}
                   />
                 </div>
@@ -508,7 +535,7 @@ export default function App() {
                       className="field-input"
                       type="text"
                       value={resumeData.first}
-                      placeholder="e.g. Maksud"
+                      placeholder="e.g. Sebastian"
                       onChange={(e) => handleFieldChange('first', e.target.value)}
                     />
                   </div>
@@ -519,7 +546,7 @@ export default function App() {
                       className="field-input"
                       type="text"
                       value={resumeData.last}
-                      placeholder="e.g. Alam"
+                      placeholder="e.g. Bennett"
                       onChange={(e) => handleFieldChange('last', e.target.value)}
                     />
                   </div>
@@ -527,24 +554,24 @@ export default function App() {
 
                 <div className="grid-2-col">
                   <div className="field-group">
-                    <label className="field-label" htmlFor="emailAddress">Email</label>
+                    <label className="field-label" htmlFor="emailAddress">Email Address</label>
                     <input
                       id="emailAddress"
                       className="field-input"
                       type="email"
                       value={resumeData.email}
-                      placeholder="e.g. maksud@musemind.agency"
+                      placeholder="e.g. hello@reallygreatsite.com"
                       onChange={(e) => handleFieldChange('email', e.target.value)}
                     />
                   </div>
                   <div className="field-group">
-                    <label className="field-label" htmlFor="phoneNumber">Phone</label>
+                    <label className="field-label" htmlFor="phoneNumber">Phone Number</label>
                     <input
                       id="phoneNumber"
                       className="field-input"
                       type="tel"
                       value={resumeData.phone}
-                      placeholder="e.g. +880 123 456 7890"
+                      placeholder="e.g. +123-456-7890"
                       onChange={(e) => handleFieldChange('phone', e.target.value)}
                     />
                   </div>
@@ -557,29 +584,29 @@ export default function App() {
                     className="field-input"
                     type="text"
                     value={resumeData.address}
-                    placeholder="e.g. Dhaka, Bangladesh"
+                    placeholder="e.g. 123 Anywhere St., Any City"
                     onChange={(e) => handleFieldChange('address', e.target.value)}
                   />
                 </div>
               </div>
             )}
 
-            {/* STEP 1: SHORT BIO */}
+            {/* STEP 1: ABOUT ME */}
             {currentStep === 1 && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <div className="field-group">
-                  <label className="field-label" htmlFor="bioTextarea">Professional Summary</label>
+                  <label className="field-label" htmlFor="bioTextarea">About Me / Summary</label>
                   <textarea
                     id="bioTextarea"
                     className="field-textarea"
                     rows="7"
                     value={resumeData.bio}
-                    placeholder="Describe your background, core strengths, and what sets you apart..."
+                    placeholder="Describe your career goals, background, and professional ethos..."
                     onChange={(e) => handleFieldChange('bio', e.target.value)}
                   />
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#7a7280', marginTop: '6px' }}>
                     <span>{resumeData.bio.length} characters</span>
-                    <span>Two to four sentences works best.</span>
+                    <span>Clear, concise summary of 2-4 sentences works best.</span>
                   </div>
                 </div>
 
@@ -592,125 +619,31 @@ export default function App() {
                     <button
                       type="button"
                       style={{ fontSize: '13px', background: '#fff', border: '1px solid #dcd7e0', padding: '6px 12px', borderRadius: '14px', cursor: 'pointer' }}
-                      onClick={() => handleFieldChange('bio', "Product Designer with 6+ years of experience leading UI/UX initiatives from discovery to deployment. Passionate about crafting intuitive experiences that boost user retention.")}
+                      onClick={() => handleFieldChange('bio', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.')}
                     >
-                      UX/UI Designer
+                      Template Default
                     </button>
                     <button
                       type="button"
                       style={{ fontSize: '13px', background: '#fff', border: '1px solid #dcd7e0', padding: '6px 12px', borderRadius: '14px', cursor: 'pointer' }}
-                      onClick={() => handleFieldChange('bio', "Full-Stack Engineer specialized in scalable cloud architectures, React ecosystems, and performance optimization. Proven track record of shipping zero-downtime microservices.")}
+                      onClick={() => handleFieldChange('bio', 'Certified Professional Accountant with 8+ years of expertise in corporate tax strategy, risk mitigation, and end-to-end financial reporting. Dedicated to precision, transparency, and data-backed financial decision making.')}
                     >
-                      Software Engineer
+                      Professional Accountant
                     </button>
                     <button
                       type="button"
                       style={{ fontSize: '13px', background: '#fff', border: '1px solid #dcd7e0', padding: '6px 12px', borderRadius: '14px', cursor: 'pointer' }}
-                      onClick={() => handleFieldChange('bio', "Results-oriented Product Manager with expertise in data-driven growth, agile sprints, and cross-functional leadership across global B2B SaaS solutions.")}
+                      onClick={() => handleFieldChange('bio', 'Senior Product Designer specialized in intuitive user experiences and design systems. Track record of improving user retention across web and mobile ecosystems.')}
                     >
-                      Product Manager
+                      Product Designer
                     </button>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* STEP 2: EXPERIENCE */}
+            {/* STEP 2: EDUCATION (Ordered before Work Experience to match visual layout) */}
             {currentStep === 2 && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
-                {resumeData.jobs.map((job, idx) => (
-                  <div key={job.id || idx} className="dynamic-card">
-                    <div className="card-header-bar">
-                      <span className="card-title-badge">
-                        {idx === 0 ? 'Current or Latest Role' : `Role #${idx + 1}`}
-                      </span>
-                      {resumeData.jobs.length > 1 && (
-                        <button
-                          type="button"
-                          className="card-delete-btn"
-                          onClick={() => removeJob(idx)}
-                          title="Delete position"
-                        >
-                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <polyline points="3 6 5 6 21 6"/>
-                            <path d="M19 6l-2 14H7L5 6m5 0V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2"/>
-                          </svg>
-                          Delete
-                        </button>
-                      )}
-                    </div>
-
-                    <div className="grid-2-col">
-                      <div className="field-group">
-                        <label className="field-label">Job Title</label>
-                        <input
-                          className="field-input"
-                          type="text"
-                          value={job.title}
-                          placeholder="e.g. Senior Product Designer"
-                          onChange={(e) => handleJobChange(idx, 'title', e.target.value)}
-                        />
-                      </div>
-                      <div className="field-group">
-                        <label className="field-label">Company</label>
-                        <input
-                          className="field-input"
-                          type="text"
-                          value={job.company}
-                          placeholder="e.g. Musemind Digital Agency"
-                          onChange={(e) => handleJobChange(idx, 'company', e.target.value)}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid-2-col">
-                      <div className="field-group">
-                        <label className="field-label">Location</label>
-                        <input
-                          className="field-input"
-                          type="text"
-                          value={job.place}
-                          placeholder="e.g. Dhaka, Bangladesh"
-                          onChange={(e) => handleJobChange(idx, 'place', e.target.value)}
-                        />
-                      </div>
-                      <div className="field-group">
-                        <label className="field-label">Employment Dates</label>
-                        <input
-                          className="field-input"
-                          type="text"
-                          value={job.dates}
-                          placeholder="e.g. 02/2021 - Present"
-                          onChange={(e) => handleJobChange(idx, 'dates', e.target.value)}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="field-group">
-                      <label className="field-label">Achievements & Key Duties (one per line)</label>
-                      <textarea
-                        className="field-textarea"
-                        rows="4"
-                        value={Array.isArray(job.points) ? job.points.join('\n') : ''}
-                        placeholder="• Designed user interfaces...&#10;• Led design reviews...&#10;• Increased conversion by 28%..."
-                        onChange={(e) => handleJobChange(idx, 'pointsText', e.target.value)}
-                      />
-                    </div>
-                  </div>
-                ))}
-
-                <button type="button" className="add-entry-btn" onClick={addJob}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                  </svg>
-                  + Add Another Role
-                </button>
-              </div>
-            )}
-
-            {/* STEP 3: EDUCATION */}
-            {currentStep === 3 && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
                 {resumeData.education.map((edu, idx) => (
                   <div key={edu.id || idx} className="dynamic-card">
@@ -724,23 +657,12 @@ export default function App() {
                           title="Delete education entry"
                         >
                           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <polyline points="3 6 5 6 21 6"/>
-                            <path d="M19 6l-2 14H7L5 6m5 0V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2"/>
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6l-2 14H7L5 6m5 0V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2" />
                           </svg>
                           Delete
                         </button>
                       )}
-                    </div>
-
-                    <div className="field-group">
-                      <label className="field-label">Degree or Certificate</label>
-                      <input
-                        className="field-input"
-                        type="text"
-                        value={edu.degree}
-                        placeholder="e.g. BFA Industrial Design"
-                        onChange={(e) => handleEduChange(idx, 'degree', e.target.value)}
-                      />
                     </div>
 
                     <div className="grid-2-col">
@@ -750,29 +672,40 @@ export default function App() {
                           className="field-input"
                           type="text"
                           value={edu.school}
-                          placeholder="e.g. Brown University"
+                          placeholder="e.g. Borcelle University"
                           onChange={(e) => handleEduChange(idx, 'school', e.target.value)}
                         />
                       </div>
                       <div className="field-group">
-                        <label className="field-label">Year of Graduation</label>
+                        <label className="field-label">Years / Graduation Period</label>
                         <input
                           className="field-input"
                           type="text"
                           value={edu.year}
-                          placeholder="e.g. 2016"
+                          placeholder="e.g. 2026-2030"
                           onChange={(e) => handleEduChange(idx, 'year', e.target.value)}
                         />
                       </div>
                     </div>
 
                     <div className="field-group">
-                      <label className="field-label">Honors / GPA / Specialization Note</label>
+                      <label className="field-label">Degree / Qualification</label>
                       <input
                         className="field-input"
                         type="text"
+                        value={edu.degree}
+                        placeholder="e.g. Senior Accountant or B.S. Accounting"
+                        onChange={(e) => handleEduChange(idx, 'degree', e.target.value)}
+                      />
+                    </div>
+
+                    <div className="field-group">
+                      <label className="field-label">Description / Academic Summary</label>
+                      <textarea
+                        className="field-textarea"
+                        rows="3"
                         value={edu.note}
-                        placeholder="e.g. Top 3% class GPA or Cum Laude"
+                        placeholder="Describe your focus or achievements..."
                         onChange={(e) => handleEduChange(idx, 'note', e.target.value)}
                       />
                     </div>
@@ -784,7 +717,89 @@ export default function App() {
                     <line x1="12" y1="5" x2="12" y2="19"></line>
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                   </svg>
-                  + Add Another Education
+                  + Add Another Education Entry
+                </button>
+              </div>
+            )}
+
+            {/* STEP 3: WORK EXPERIENCE */}
+            {currentStep === 3 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
+                {resumeData.jobs.map((job, idx) => (
+                  <div key={job.id || idx} className="dynamic-card">
+                    <div className="card-header-bar">
+                      <span className="card-title-badge">
+                        {idx === 0 ? 'Current or Latest Position' : `Position #${idx + 1}`}
+                      </span>
+                      {resumeData.jobs.length > 1 && (
+                        <button
+                          type="button"
+                          className="card-delete-btn"
+                          onClick={() => removeJob(idx)}
+                          title="Delete position"
+                        >
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6l-2 14H7L5 6m5 0V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2" />
+                          </svg>
+                          Delete
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="grid-2-col">
+                      <div className="field-group">
+                        <label className="field-label">Company / Firm</label>
+                        <input
+                          className="field-input"
+                          type="text"
+                          value={job.company}
+                          placeholder="e.g. Salford & Co."
+                          onChange={(e) => handleJobChange(idx, 'company', e.target.value)}
+                        />
+                      </div>
+                      <div className="field-group">
+                        <label className="field-label">Employment Dates</label>
+                        <input
+                          className="field-input"
+                          type="text"
+                          value={job.dates}
+                          placeholder="e.g. 2033 - 2035"
+                          onChange={(e) => handleJobChange(idx, 'dates', e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="field-group">
+                      <label className="field-label">Job Title</label>
+                      <input
+                        className="field-input"
+                        type="text"
+                        value={job.title}
+                        placeholder="e.g. Senior Accountant"
+                        onChange={(e) => handleJobChange(idx, 'title', e.target.value)}
+                      />
+                    </div>
+
+                    <div className="field-group">
+                      <label className="field-label">Achievements & Key Duties (one per line or paragraph)</label>
+                      <textarea
+                        className="field-textarea"
+                        rows="4"
+                        value={Array.isArray(job.points) ? job.points.join('\n') : ''}
+                        placeholder="Describe your role responsibilities and results..."
+                        onChange={(e) => handleJobChange(idx, 'pointsText', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                ))}
+
+                <button type="button" className="add-entry-btn" onClick={addJob}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                  + Add Another Position
                 </button>
               </div>
             )}
@@ -804,8 +819,8 @@ export default function App() {
                           title="Delete skill category"
                         >
                           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <polyline points="3 6 5 6 21 6"/>
-                            <path d="M19 6l-2 14H7L5 6m5 0V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2"/>
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6l-2 14H7L5 6m5 0V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2" />
                           </svg>
                           Delete
                         </button>
@@ -818,18 +833,18 @@ export default function App() {
                         className="field-input"
                         type="text"
                         value={group.name}
-                        placeholder="e.g. Industry Knowledge, Tools, Languages"
+                        placeholder="e.g. Accounting, Auditing, Tools"
                         onChange={(e) => handleSkillChange(idx, 'name', e.target.value)}
                       />
                     </div>
 
                     <div className="field-group">
-                      <label className="field-label">Skills (comma separated)</label>
+                      <label className="field-label">Skills (comma separated, displayed in 3 columns)</label>
                       <input
                         className="field-input"
                         type="text"
                         value={group.skills}
-                        placeholder="e.g. Figma, Sketch, React, UX Research"
+                        placeholder="e.g. Auditing, Financial Accounting, Financial Reporting"
                         onChange={(e) => handleSkillChange(idx, 'skills', e.target.value)}
                       />
                     </div>
@@ -889,7 +904,7 @@ export default function App() {
           </section>
 
           {/* =================================================================
-              RIGHT: LIVE CANVAS PREVIEW
+              RIGHT: LIVE CANVAS PREVIEW (MATCHING SEBASTIAN BENNETT TEMPLATE)
              ================================================================= */}
           <aside className="canvas-aside" aria-label="Real-time CV preview">
             <article
@@ -897,123 +912,143 @@ export default function App() {
               ref={previewRef}
               className="cv-preview-paper"
             >
-              {/* Top Accent Strip */}
-              <div className="paper-top-accent" />
-
-              {/* Header: Photo on Left, Contact on Right */}
-              <div className="paper-header">
-                <div className="paper-avatar-circle" role="img" aria-label="Candidate avatar">
-                  {resumeData.photo ? (
-                    <img src={resumeData.photo} alt="Avatar" className="paper-avatar-img" />
-                  ) : (
-                    <svg width="80" height="86" viewBox="0 0 120 130" aria-hidden="true">
-                      <circle cx="60" cy="48" r="26" fill="#d9d0cc" />
-                      <path d="M8 130c0-34 24-52 52-52s52 18 52 52z" fill="#d9d0cc" />
-                    </svg>
-                  )}
-                </div>
-
-                <div className="paper-contact-info">
-                  {resumeData.address && <div>{resumeData.address}</div>}
-                  {resumeData.phone && (
-                    <div>
-                      <a href={`tel:${resumeData.phone}`} className="paper-contact-link">
-                        {resumeData.phone}
-                      </a>
+              <div className="paper-body">
+                {/* CENTERED HEADER */}
+                <header className="paper-header-centered">
+                  {resumeData.photo && (
+                    <div className="paper-avatar-wrapper">
+                      <img src={resumeData.photo} alt="Avatar" className="paper-avatar-img" />
                     </div>
                   )}
-                  {resumeData.email && (
-                    <div>
-                      <a href={`mailto:${resumeData.email}`} className="paper-contact-link">
-                        {resumeData.email}
-                      </a>
-                    </div>
-                  )}
-                </div>
-              </div>
 
-              {/* ABOUT SECTION */}
-              <div className="paper-section">
-                <span className={`vertical-tag ${currentStep === 0 || currentStep === 1 ? 'hot' : ''}`}>
-                  ABOUT
-                </span>
-                <div className="paper-section-content">
-                  <h2 className="paper-candidate-name">
-                    {resumeData.first || 'FIRST'} {resumeData.last || 'LAST'}
-                  </h2>
-                  <div className="paper-candidate-role">
-                    {resumeData.jobTitle || 'Professional Title'}
+                  <h1 className="paper-name">
+                    {resumeData.first || resumeData.last
+                      ? `${resumeData.first || ''} ${resumeData.last || ''}`.trim()
+                      : 'SEBASTIAN BENNETT'}
+                  </h1>
+
+                  <div className="paper-title">
+                    {resumeData.jobTitle || 'Professional Accountant'}
                   </div>
-                  {resumeData.bio && (
-                    <p className="paper-bio-text">{resumeData.bio}</p>
-                  )}
-                </div>
-              </div>
 
-              {/* WORK EXPERIENCE SECTION */}
-              <div className="paper-section" style={{ marginTop: '52px' }}>
-                <span className={`vertical-tag ${currentStep === 2 ? 'hot' : ''}`}>
-                  WORK EXPERIENCE
-                </span>
-                <div className="paper-section-content">
-                  {resumeData.jobs.map((job, idx) => (
-                    <div key={job.id || idx} className="experience-item">
-                      <div className="item-role-title">
-                        {job.title ? `${job.title}, ` : ''}{job.company || ''}
+                  {/* CONTACT INFO ROW WITH ICONS */}
+                  <div className="paper-contact-row">
+                    {(resumeData.phone || (!resumeData.phone && !resumeData.email && !resumeData.address)) && (
+                      <div className="paper-contact-item">
+                        <svg className="paper-contact-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                        </svg>
+                        <a href={`tel:${resumeData.phone || '+123-456-7890'}`} className="paper-contact-link">
+                          {resumeData.phone || '+123-456-7890'}
+                        </a>
                       </div>
-                      <div className="item-meta-subtitle">
-                        {job.place || ''}{job.place && job.dates ? ' - ' : ''}
-                        {job.dates ? `(${job.dates})` : ''}
-                      </div>
-                      {Array.isArray(job.points) && job.points.length > 0 && (
-                        <ul className="item-bullet-list">
-                          {job.points
-                            .filter((pt) => pt && pt.trim().length > 0)
-                            .map((pt, pIdx) => (
-                              <li key={pIdx}>{pt.replace(/^[•\-*]\s*/, '')}</li>
-                            ))}
-                        </ul>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
+                    )}
 
-              {/* BOTTOM TWO-COLUMN: EDUCATION & SKILLS */}
-              <div className="paper-bottom-grid">
-                {/* EDUCATION */}
-                <div className="paper-bottom-section">
-                  <span className={`vertical-tag ${currentStep === 3 ? 'hot' : ''}`}>
-                    EDUCATION
-                  </span>
-                  <div className="paper-section-content">
-                    {resumeData.education.map((edu, idx) => (
-                      <div key={edu.id || idx} className="edu-item">
-                        <div className="item-role-title">{edu.degree}</div>
-                        <div className="item-meta-subtitle">
-                          {edu.school}{edu.school && edu.year ? ' - ' : ''}{edu.year}
+                    {(resumeData.email || (!resumeData.phone && !resumeData.email && !resumeData.address)) && (
+                      <div className="paper-contact-item">
+                        <svg className="paper-contact-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <rect width="20" height="16" x="2" y="4" rx="2" />
+                          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                        </svg>
+                        <a href={`mailto:${resumeData.email || 'hello@reallygreatsite.com'}`} className="paper-contact-link">
+                          {resumeData.email || 'hello@reallygreatsite.com'}
+                        </a>
+                      </div>
+                    )}
+
+                    {(resumeData.address || (!resumeData.phone && !resumeData.email && !resumeData.address)) && (
+                      <div className="paper-contact-item">
+                        <svg className="paper-contact-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                          <circle cx="12" cy="10" r="3" />
+                        </svg>
+                        <span>{resumeData.address || '123 Anywhere St., Any City'}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="paper-divider" />
+                </header>
+
+                {/* ABOUT ME SECTION */}
+                {(resumeData.bio || currentStep === 1) && (
+                  <section className="paper-section">
+                    <h2 className="paper-section-heading">ABOUT ME</h2>
+                    <p className="paper-bio-text">
+                      {resumeData.bio || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'}
+                    </p>
+                    <div className="paper-divider" />
+                  </section>
+                )}
+
+                {/* EDUCATION SECTION */}
+                {resumeData.education && resumeData.education.length > 0 && (
+                  <section className="paper-section">
+                    <h2 className="paper-section-heading">EDUCATION</h2>
+                    <div className="paper-items-stack">
+                      {resumeData.education.map((edu, idx) => (
+                        <div key={edu.id || idx} className="paper-item-block">
+                          <div className="paper-item-meta">
+                            {edu.school || 'Borcelle University'}{edu.school && edu.year ? ' | ' : ''}{edu.year || ''}
+                          </div>
+                          <div className="paper-item-title">
+                            {edu.degree || 'Degree / Major'}
+                          </div>
+                          {edu.note && (
+                            <p className="paper-item-desc">{edu.note}</p>
+                          )}
                         </div>
-                        {edu.note && <div className="item-note-text">{edu.note}</div>}
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                      ))}
+                    </div>
+                    <div className="paper-divider" />
+                  </section>
+                )}
 
-                {/* SKILLS */}
-                <div className="paper-bottom-section">
-                  <span className={`vertical-tag ${currentStep === 4 ? 'hot' : ''}`}>
-                    SKILLS
-                  </span>
-                  <div className="paper-section-content">
-                    {resumeData.skillGroups.map((group, idx) => (
-                      <div key={group.id || idx} className="skill-item">
-                        <div className="item-role-title">{group.name}</div>
-                        <div className="item-skills-text">{group.skills}</div>
+                {/* WORK EXPERIENCE SECTION */}
+                {resumeData.jobs && resumeData.jobs.length > 0 && (
+                  <section className="paper-section">
+                    <h2 className="paper-section-heading">WORK EXPERIENCE</h2>
+                    <div className="paper-items-stack">
+                      {resumeData.jobs.map((job, idx) => (
+                        <div key={job.id || idx} className="paper-item-block">
+                          <div className="paper-item-meta">
+                            {job.company || 'Salford & Co.'}{job.company && job.dates ? ' | ' : ''}{job.dates || ''}
+                          </div>
+                          <div className="paper-item-title">
+                            {job.title || 'Senior Accountant'}
+                          </div>
+                          {Array.isArray(job.points) && job.points.length > 0 && (
+                            <div className="paper-item-desc-stack">
+                              {job.points.filter(Boolean).map((pt, pIdx) => (
+                                <p key={pIdx} className="paper-item-desc">
+                                  {pt.replace(/^[•\-*]\s*/, '')}
+                                </p>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="paper-divider" />
+                  </section>
+                )}
+
+                {/* SKILLS SECTION */}
+                <section className="paper-section paper-skills-section">
+                  <h2 className="paper-section-heading">SKILLS</h2>
+                  <div className="paper-skills-grid">
+                    {getAllSkills().map((skill, sIdx) => (
+                      <div key={sIdx} className="paper-skill-item">
+                        <span className="paper-skill-bullet">•</span>
+                        <span className="paper-skill-name">{skill}</span>
                       </div>
                     ))}
                   </div>
-                </div>
+                </section>
               </div>
+
+              {/* SOLID BOTTOM ACCENT BAR */}
+              <div className="paper-bottom-bar" />
             </article>
           </aside>
         </div>

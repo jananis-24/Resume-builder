@@ -105,11 +105,29 @@ a {
     min-height: 297mm !important;
     max-width: 100% !important;
     margin: 0 !important;
-    padding: 24mm 20mm !important;
+    padding: 16mm 16mm 0 16mm !important;
     box-shadow: none !important;
     border-radius: 0 !important;
     position: absolute !important;
     top: 0 !important;
     left: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .paper-body {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .paper-bottom-bar {
+    width: calc(100% + 32mm) !important;
+    margin-left: -16mm !important;
+    margin-right: -16mm !important;
+    margin-top: auto !important;
+    height: 10mm !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }

@@ -549,49 +549,41 @@
 
 /* The A4 Resume Document Sheet */
 .cv-preview-paper {
-  background: var(--color-paper);
+  background: #ffffff;
   width: 100%;
-  max-width: 680px;
-  min-height: 780px;
+  max-width: 660px;
+  min-height: 934px;
   margin: 0 auto;
-  padding: 52px 56px 48px;
+  padding: 44px 44px 0 44px;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--color-paper-shadow);
-  border-radius: 4px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.16);
+  border-radius: 2px;
 }
 
-/* Top Decorative Accent Bar */
-.paper-top-accent {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 6px;
-  background: var(--color-primary);
-}
-
-/* Resume Paper Header */
-.paper-header {
-  position: relative;
+.paper-body {
+  flex: 1;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 32px;
+  flex-direction: column;
 }
 
-.paper-avatar-circle {
-  width: 120px;
-  height: 120px;
+/* Centered Resume Header */
+.paper-header-centered {
+  text-align: center;
+  margin-bottom: 0;
+}
+
+.paper-avatar-wrapper {
+  width: 76px;
+  height: 76px;
   border-radius: 50%;
-  background: #f5f3f2;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  margin: 0 auto 12px;
   overflow: hidden;
-  border: 1px solid #e5e0dc;
-  flex-shrink: 0;
+  border: 2px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .paper-avatar-img {
@@ -600,17 +592,57 @@
   object-fit: cover;
 }
 
-.paper-contact-info {
-  text-align: right;
-  font-family: var(--font-body);
-  font-size: 12px;
-  line-height: 1.7;
-  color: var(--color-text-muted);
-  padding-top: 24px;
+.paper-name {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #1a1a1a;
+  margin: 0 0 6px 0;
+  line-height: 1.2;
+}
+
+.paper-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #4b4b4b;
+  letter-spacing: 0.04em;
+  margin: 0 0 14px 0;
+}
+
+/* Contact Info Row with Icons */
+.paper-contact-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 530px;
+  margin: 0 auto 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10.5px;
+  color: #555555;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.paper-contact-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.paper-contact-icon {
+  width: 12px;
+  height: 12px;
+  color: #1a1a1a;
+  flex-shrink: 0;
 }
 
 .paper-contact-link {
-  color: #1d4ed8;
+  color: inherit;
   text-decoration: none;
 }
 
@@ -618,132 +650,125 @@
   text-decoration: underline;
 }
 
-/* Section with Rotated Vertical Header */
+/* Full Width Divider Line */
+.paper-divider {
+  width: 100%;
+  height: 1px;
+  background-color: #d4d4d8;
+  margin: 14px 0 16px;
+}
+
+/* Resume Sections */
 .paper-section {
-  display: flex;
-  gap: 28px;
-  position: relative;
-  margin-top: 36px;
-}
-
-.vertical-tag {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  font-family: var(--font-heading);
-  font-size: 28px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  color: transparent;
-  -webkit-text-stroke: 1px #a9a2a6;
-  align-self: flex-start;
-  transition: -webkit-text-stroke 0.25s ease, transform 0.25s ease;
-  user-select: none;
-  flex-shrink: 0;
-}
-
-.vertical-tag.hot {
-  -webkit-text-stroke: 1.6px var(--color-primary);
-  filter: drop-shadow(0 2px 8px rgba(194, 65, 12, 0.2));
-}
-
-.paper-section-content {
-  flex: 1;
-  min-width: 0;
-}
-
-/* Candidate Name & Title */
-.paper-candidate-name {
-  font-family: var(--font-heading);
-  font-size: 42px;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  color: #0e0912;
-  text-transform: uppercase;
-  margin: 0;
-  line-height: 1.1;
-}
-
-.paper-candidate-role {
-  font-family: var(--font-body);
-  font-size: 15px;
-  color: #33293a;
-  margin: 6px 0 18px;
-}
-
-.paper-bio-text {
-  font-family: var(--font-body);
-  font-size: 12.5px;
-  line-height: 1.5;
-  color: #33293a;
-  margin: 0;
-}
-
-/* Experience Items */
-.experience-item {
-  margin-bottom: 20px;
-}
-
-.experience-item:last-child {
   margin-bottom: 0;
 }
 
-.item-role-title {
-  font-family: var(--font-heading);
+.paper-section-heading {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13.5px;
   font-weight: 700;
-  font-size: 14px;
-  color: #111111;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #18181b;
+  margin: 0 0 8px 0;
 }
 
-.item-meta-subtitle {
-  font-family: var(--font-body);
-  font-size: 12px;
-  color: var(--color-text-muted);
-  margin: 6px 0 8px;
-}
-
-.item-bullet-list {
-  font-family: var(--font-body);
-  font-size: 12.5px;
-  line-height: 1.45;
-  color: #33293a;
+/* About Me Paragraph */
+.paper-bio-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10.5px;
+  line-height: 1.55;
+  color: #444444;
   margin: 0;
-  padding-left: 18px;
+  text-align: justify;
 }
 
-.item-bullet-list li {
+/* Education and Experience Items */
+.paper-items-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.paper-item-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.paper-item-meta {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  color: #71717a;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.paper-item-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #18181b;
   margin-bottom: 4px;
 }
 
-/* Bottom 2-Column Grid (Education & Skills) */
-.paper-bottom-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  margin-top: 40px;
+.paper-item-desc {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10.5px;
+  line-height: 1.55;
+  color: #444444;
+  margin: 0 0 4px 0;
+  text-align: justify;
 }
 
-.paper-bottom-section {
+.paper-item-desc:last-child {
+  margin-bottom: 0;
+}
+
+.paper-item-desc-stack {
   display: flex;
-  gap: 18px;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.paper-bottom-section .vertical-tag {
-  font-size: 24px;
+/* Skills 3-Column Bulleted Grid */
+.paper-skills-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 16px;
+  row-gap: 6px;
+  margin-top: 4px;
 }
 
-.edu-item {
-  margin-bottom: 16px;
+.paper-skill-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10.5px;
+  color: #27272a;
 }
 
-.skill-item {
-  margin-bottom: 14px;
+.paper-skill-bullet {
+  font-size: 11px;
+  line-height: 1;
+  color: #18181b;
+  flex-shrink: 0;
 }
 
-.item-note-text, .item-skills-text {
-  font-family: var(--font-body);
-  font-size: 12.5px;
-  color: #33293a;
-  line-height: 1.4;
+.paper-skill-name {
+  white-space: normal;
+  word-break: break-word;
+}
+
+/* Bottom Solid Accent Bar */
+.paper-bottom-bar {
+  height: 32px;
+  background-color: var(--color-primary, #4e5159);
+  width: calc(100% + 88px);
+  margin-left: -44px;
+  margin-right: -44px;
+  margin-top: 36px;
+  flex-shrink: 0;
 }
 
 /* ==========================================================================

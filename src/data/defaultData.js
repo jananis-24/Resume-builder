@@ -1,86 +1,73 @@
 export const defaultResumeData = {
   // Personal Details
-  jobTitle: 'Senior Product Designer',
-  first: 'Maksud',
-  last: 'Alam',
-  email: 'maksud@musemind.agency',
-  phone: '+880 123 456 7890',
-  address: 'Dhaka, Bangladesh',
-  photo: '', // Default avatar SVG is rendered when empty
+  jobTitle: 'Professional Accountant',
+  first: 'Sebastian',
+  last: 'Bennett',
+  email: 'hello@reallygreatsite.com',
+  phone: '+123-456-7890',
+  address: '123 Anywhere St., Any City',
+  photo: '',
 
-  // Bio
-  bio: "I'm a Senior Product Designer at MuseMind, creating meaningful, user-centered experiences with a decade of design experience across mobile and web platforms.",
-
-  // Work Experience (Dynamic array of jobs)
-  jobs: [
-    {
-      id: 'job-1',
-      title: 'Senior Product Designer',
-      company: 'Musemind Digital Agency',
-      place: 'Dhaka, Bangladesh',
-      dates: '02/08/2021 - Present',
-      points: [
-        'Designed high-fidelity visual designs and comprehensive UI design systems.',
-        'Created design specifications and interactive documentation for development teams.',
-        'Mentored junior designers and conducted collaborative design critique reviews.'
-      ]
-    },
-    {
-      id: 'job-2',
-      title: 'Product Designer',
-      company: 'Lunchbox',
-      place: 'Kiev, Ukraine',
-      dates: '01/01/2020 - 01/07/2021',
-      points: [
-        'Designed and launched several digital products for high-growth clients in hospitality.',
-        'Worked closely with engineering leads to ensure design fidelity and responsive performance.'
-      ]
-    }
-  ],
+  // Bio / About Me
+  bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
 
   // Education (Dynamic array)
   education: [
     {
       id: 'edu-1',
-      degree: 'BFA Industrial Design',
-      school: 'Rhode Island School of Design',
-      year: '2013',
-      note: 'Top 3% class GPA & Dean\'s Honor List'
+      degree: 'Senior Accountant',
+      school: 'Borcelle University',
+      year: '2026-2030',
+      note: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
     },
     {
       id: 'edu-2',
-      degree: 'BA in Interaction Design',
-      school: 'Brown University',
-      year: '2016',
-      note: 'Focus on Human-Computer Interaction'
+      degree: 'Senior Accountant',
+      school: 'Borcelle University',
+      year: '2025-2026',
+      note: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
     }
   ],
 
-  // Skills (Dynamic array of categorized skill groups)
+  // Work Experience (Dynamic array of jobs)
+  jobs: [
+    {
+      id: 'job-1',
+      title: 'Senior Accountant',
+      company: 'Salford & Co.',
+      place: 'New York, USA',
+      dates: '2033 - 2035',
+      points: [
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'
+      ]
+    },
+    {
+      id: 'job-2',
+      title: 'Financial Accountant',
+      company: 'Salford & Co.',
+      place: 'New York, USA',
+      dates: '2030 - 2033',
+      points: [
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
+      ]
+    }
+  ],
+
+  // Skills (Individual skills or comma-separated groups for the 3-column bulleted layout)
   skillGroups: [
     {
       id: 'skill-1',
-      name: 'Industry Knowledge',
-      skills: 'Product Design, User Interface, Interaction Design, Wire-framing, Design Systems'
-    },
-    {
-      id: 'skill-2',
-      name: 'Tools & Technologies',
-      skills: 'Figma, Sketch, Protopie, Framer, InVision, Adobe CC'
-    },
-    {
-      id: 'skill-3',
-      name: 'Other Skills',
-      skills: 'HTML5, CSS3, JavaScript, User Research, Usability Testing'
+      name: 'Accounting & Auditing',
+      skills: 'Auditing, Financial Accounting, Financial Reporting, Auditing, Financial Accounting, Tax Advisory'
     }
   ]
 };
 
 export const ACCENT_COLORS = [
-  { name: 'Terracotta', hex: '#c2410c' },
+  { name: 'Charcoal Slate', hex: '#4e5159' },
+  { name: 'Midnight Onyx', hex: '#1e293b' },
+  { name: 'Classic Black', hex: '#18181b' },
   { name: 'Royal Sapphire', hex: '#2563eb' },
   { name: 'Forest Emerald', hex: '#059669' },
-  { name: 'Deep Amethyst', hex: '#7c3aed' },
-  { name: 'Rosewood', hex: '#be123c' },
-  { name: 'Slate Onyx', hex: '#1e293b' }
+  { name: 'Terracotta', hex: '#c2410c' }
 ];
