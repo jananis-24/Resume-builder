@@ -1,16 +1,27 @@
-# React + Vite
+# Resume Builder
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Build a clean one-page CV in five steps and download it as a PDF.
 
-Currently, two official plugins are available:
+Fill in your details one step at a time: personal details, about me, education, experience and skills. The A4 preview next to the form updates as you type. Pick an accent color, add a photo, then download the PDF or print it.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- Five-step form with a live A4 preview
+- Add and remove education, work experience and skill groups
+- Profile photo upload
+- Six accent colors
+- Download as PDF (html2pdf.js) or print
+- Progress is saved in the browser (localStorage), so a refresh doesn't lose your work
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech
 
-## Expanding the Oxlint configuration
+React 19 · Vite · JavaScript · CSS · html2pdf.js
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Run it locally
+
+```bash
+npm install
+npm run dev
+```
+
+Then open the address Vite prints (usually http://localhost:5173).
