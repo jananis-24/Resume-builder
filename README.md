@@ -2,6 +2,8 @@
 
 Build a clean one-page CV in five steps and download it as a PDF.
 
+**Live demo:** https://resume-builder-j.vercel.app
+
 Fill in your details one step at a time: personal details, about me, education, experience and skills. The A4 preview next to the form updates as you type. Pick an accent color, add a photo, then download the PDF or print it.
 
 ## Features
